@@ -31,6 +31,45 @@ Error generating stack: `+e.message+`
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (() => {
+        const applyInterviewText = () => {
+          const source = document.querySelector("#interview-source");
+          const chapters = source?.querySelectorAll(".chapter");
+          const targets = [...document.querySelectorAll("#ch1, #ch2, #ch3, #ch4, #ch5, #ch6")];
+          const finalScreen = document.querySelector(".final-screen");
+
+          if (!source || !chapters?.length || !targets.length || source.dataset.merged === "true") return;
+
+          targets.forEach((target, index) => {
+            const chapter = chapters[index];
+            const content = target.querySelector(".max-w-2xl");
+            if (!chapter || !content) return;
+
+            content.replaceChildren(chapter.cloneNode(true));
+            const heading = content.querySelector("h2");
+            if (heading) heading.className = "chapter-title mb-10";
+          });
+
+          const finalChapter = chapters[targets.length];
+          if (finalChapter && finalScreen) {
+            const finalContent = finalScreen.querySelector(".max-w-2xl");
+            if (finalContent) finalContent.replaceChildren(finalChapter.cloneNode(true));
+          }
+
+          source.dataset.merged = "true";
+          source.remove();
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", applyInterviewText);
+        } else {
+          applyInterviewText();
+        }
+
+        new MutationObserver(applyInterviewText).observe(document.querySelector("#root"), { childList: true });
+      })();
+    </script>
 
   </body>
 </html>
